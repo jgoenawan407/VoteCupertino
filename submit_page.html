@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"> 
+		<meta name="description" content="Useful website">
+		<meta name="author" content="Jackson Goenawan">
+		<meta name="newport" content="width = device-width, initial-scale=1.0"> <!-- Makes sure that webpage fits on to any device -->
+		<title>VoteCupertino Input Page</title>
+	</head>
+	<body>
+		<h1>Address Input Page</h1>
+		
+		<h3>On this page, you can enter your address and once you submit, you'll be provided with the voting centers and their distances to you!</h3>
+		<hr>
+		<form name = "AddressForm", onsubmit = "initMap()">
+			<span>Your address:</span>
+			<input type = "text" id = "Address"/>
+			<button id = "submitter">Submit</button>
+		</form>
+		<br>
+
+	<style>
+		#map { 
+		height: 400px;
+		width: 100%;
+	}
+	</style>
+
+	<div id = "map"></div>
+	<br>
+	<h4>Each distance displayed corresponds with each voting center address.</h4> 
+	<div>Destinations:</div>
+	<div>1650 S Bernardo Avenue, Sunnyvale, CA</div>
+    <div>22601 Voss Avenue, Cupertino, CA</div>
+    <div>18000 Chelmsford Drive, Cupertino, CA</div>
+    <div>22445 Cupertino Road, Cupertino, CA</div>
+    <div>19624 Homestead Rd, Cupertino, CA</div>
+	
+	<div id = "msg"></div> <!-- Message displaying the closest center and distance -->
+
+	<script>
+
+    function getDistances(directionsService, destinations){
+	// Request data, extract distance, and then assign that distance to the corresponding slot in the distances array
+
+	for(var i = 0; i < destinations.length; i++){ // Loop through all voting sites
+
+	    const route = {origin: document.getElementById("Address").value, // User input for their address
+	      destination: destinations[i],
+	      travelMode: 'DRIVING'}
+
+	    directionsService.route(route, // Request for a route
+	    function(response, status) { // Need fn with the call result (response) and call status, variables filled w directionsResult & directionsStatus
+	      if (status !== 'OK') {
+	        window.alert('Directions request failed due to status error: ' + status);
+	        return;
+	      } 
+	      else {
+	        var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
+	        if (!directionsData) {
+	          window.alert('Directions request failed');
+	          return;
+	        }
+	        else {
+
+	        	document.getElementById("msg").innerHTML += directionsData.distance.text + "les away. <br />";
+	        	//return directionsData.distance.text;
+	        	//document.getElementById("msg").innerHTML += destinations[i] + ": " + directionsData.distance.value + " meters <br />";
+	        	//document.getElementById("msg").innerHTML += directionsData.distance.text + "<br />";
+	        	//directionsRenderer.setDirections(response);	        	
+	        }	        
+	      }
+	    });
+		//}
+	}
+}
+		// Did not end up using this function, could not store each route distance so could not find min distance
+		function getMinDist(distances){
+		// Assign lowest distance to the first one, and check if any of the other distances are less
+		var minDist = distances[0];
+		var minIndex = 0;
+		for(var i = 0; i < distances.length; i++){
+
+			if(distances[i] < minDist){
+				minDist = distances[i];
+				minIndex = i;
+			}
+		}
+
+		return minDist;
+	}
+
+		// Also did not end up using
+		function getMinIndex(distances){
+
+		var minDist = distances[0];
+		var minIndex = 0;
+		for(var i = 0; i < distances.length; i++){
+
+			if(distances[i] < minDist){
+				minDist = distances[i];
+				minIndex = i;
+			}
+		}
+
+		return minIndex;
+		}
+
+	// "Main method"
+	function initMap() {       
+      	
+    const options = {
+        zoom: 14,
+      	center: {lat: 37.3230, lng: -122.0322} // Set the center of the map to be Cupertino's coordinates
+    }
+
+    const map = new google.maps.Map(document.getElementById("map"), options); 
+
+    let directionsService = new google.maps.DirectionsService(); // Get directions API
+    let directionsRenderer = new google.maps.DirectionsRenderer(); // Generate results from direction service
+    directionsRenderer.setMap(map);
+
+    // Establish all markers and clickers (with corresponding addresses)
+    
+    let infoWindow1 = new google.maps.InfoWindow({
+
+    	content:"<h2>1650 S Bernardo Avenue, Sunnyvale, CA (Cupertino Middle School)</h2>"
+    });
+
+    let marker1 = new google.maps.Marker({
+
+    	position: {lat: 37.338000, lng: -122.058780},
+    	map: map
+    });
+    
+    marker1.addListener('click', function(){
+
+    	infoWindow1.open(map, marker1);
+    });
+
+    let infoWindow2 = new google.maps.InfoWindow({
+
+    	content:"<h2>22601 Voss Avenue, Cupertino, CA</h2>"
+    });
+    
+    let marker2 = new google.maps.Marker({
+
+    	position: {lat: 37.318480, lng: -122.069890},
+    	map: map
+    });
+
+    marker2.addListener("click", function(){
+
+    	infoWindow2.open(map, marker2);
+    });
+
+    let infoWindow3 = new google.maps.InfoWindow({
+
+    	content:"<h2>18000 Chelmsford Drive, Cupertino, CA</h2>"
+    });
+
+	let marker3 = new google.maps.Marker({
+
+    	position: {lat: 37.310290, lng: -121.997090},
+    	map: map
+    });
+
+    marker3.addListener("click", function(){
+
+    	infoWindow3.open(map, marker3);
+    });
+
+	let infoWindow4 = new google.maps.InfoWindow({
+
+    	content:"<h2>22445 Cupertino Road, Cupertino, CA</h2>"
+    });
+
+    let marker4 = new google.maps.Marker({
+
+    	position: {lat: 37.323280, lng: -122.067860},
+    	map: map
+    });
+    
+    marker4.addListener("click", function(){
+
+    	infoWindow4.open(map, marker4);
+    });
+
+    let infoWindow5 = new google.maps.InfoWindow({
+
+    	content:"<h2>19624 Homestead Rd, Cupertino, CA</h2>"
+    });
+
+    let marker5 = new google.maps.Marker({
+
+    	position: {lat: 37.337175, lng: -122.016021},
+    	map: map
+    });
+
+    marker5.addListener("click", function(){
+
+    	infoWindow5.open(map, marker5);
+    });
+
+    event.preventDefault(); // Prevents page from resetting
+
+    // Create the set of all voting site addresses
+    const destinations = ["1650 S Bernardo Avenue, Sunnyvale, CA", // Cupertino Middle School
+    "22601 Voss Avenue, Cupertino, CA", // Rec center
+    "18000 Chelmsford Drive, Cupertino, CA", // Rancho Rinconada
+    "22445 Cupertino Road, Cupertino, CA", // Sunny view
+    "19624 Homestead Rd, Cupertino, CA" // Homestead church
+    ]
+
+    //const distances = []; // Empty array which will hold all distances, did not end up using
+
+    getDistances(directionsService, destinations);
+	}
+
+    /* Didn't end up having to use this click handler, form onsubmit took care of the page reset issue
+    const onChangeHandler = function() {
+    	getDistances(directionsService, destinations);
+        };
+
+        document
+          .getElementById("submitter")
+          .addEventListener("click", onChangeHandler);
+	*/
+		</script>
+
+	<script async defer
+		src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBOy7YYg-sL2ODe25SfxSPpNL1P5YznIPI&callback=initMap&libraries=&v=weekly"> // Establish map API
+    </script>
+	</body>
+</html>
